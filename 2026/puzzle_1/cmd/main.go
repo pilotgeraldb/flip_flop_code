@@ -10,10 +10,15 @@ import (
 	"strings"
 )
 
+var (
+	AllTemps      []int
+	Temps         []int
+	ExpectedTemps []int
+)
+
 const (
-	Threshold         = 60 //temperature threshold in degrees
-	TimeToHeatSeconds = 1  //time to heat 1 degree in seconds
-	TimeToCoolSeconds = 5  //time to cool 1 degree in seconds
+	TimeToHeatSeconds = 1 //time to heat 1 degree in seconds
+	TimeToCoolSeconds = 5 //time to cool 1 degree in seconds
 	Delimiter         = '\n'
 )
 
@@ -40,21 +45,28 @@ func process(path string) int {
 				log.Fatal(err)
 			}
 			fmt.Println(i)
-			if i > Threshold {
-				//cool
-				secondsToCool := (i - Threshold) * TimeToCoolSeconds
-				total += secondsToCool
-			} else if i < Threshold {
-				//heat
-				secondsToHeat := (Threshold - i) * TimeToHeatSeconds
-				total += secondsToHeat
-			}
+			AllTemps = append(AllTemps, i)
+
 		}
 		if err == io.EOF {
 			break
 		}
 		if err != nil {
 			log.Fatal(err)
+		}
+	}
+	Temps = AllTemps[:(len(AllTemps) / 2)]
+	ExpectedTemps = AllTemps[(len(AllTemps) / 2):]
+	for idx, temp := range Temps {
+		Threshold := ExpectedTemps[idx]
+		if temp > Threshold {
+			//cool
+			secondsToCool := (temp - Threshold) * TimeToCoolSeconds
+			total += secondsToCool
+		} else if temp < Threshold {
+			//heat
+			secondsToHeat := (Threshold - temp) * TimeToHeatSeconds
+			total += secondsToHeat
 		}
 	}
 	return total

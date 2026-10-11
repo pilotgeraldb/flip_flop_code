@@ -8,5 +8,5 @@ import (
 
 func TestProcess(t *testing.T) {
 	actual := process("testData/input.txt")
-	assert.Equal(t, 1371, actual)
+	assert.Equal(t, 1141, actual)
 }
