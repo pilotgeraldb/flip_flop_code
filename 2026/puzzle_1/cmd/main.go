@@ -13,6 +13,7 @@ import (
 const (
 	Threshold         = 60 //temperature threshold in degrees
 	TimeToHeatSeconds = 1  //time to heat 1 degree in seconds
+	TimeToCoolSeconds = 5  //time to cool 1 degree in seconds
 	Delimiter         = '\n'
 )
 
@@ -39,11 +40,15 @@ func process(path string) int {
 				log.Fatal(err)
 			}
 			fmt.Println(i)
-			if i >= Threshold {
-				continue
+			if i > Threshold {
+				//cool
+				secondsToCool := (i - Threshold) * TimeToCoolSeconds
+				total += secondsToCool
+			} else if i < Threshold {
+				//heat
+				secondsToHeat := (Threshold - i) * TimeToHeatSeconds
+				total += secondsToHeat
 			}
-			secondsToHeat := (Threshold - i) * TimeToHeatSeconds
-			total += secondsToHeat
 		}
 		if err == io.EOF {
 			break
